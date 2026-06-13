@@ -4,9 +4,9 @@
 
 [x] 1. Initialize ROS2 package
 [x] 2. Implement simple_controller.cpp, publish /cmd_vel
+[x] 3. Create mini_car.urdf.xacro to describe the mini_car model
+[x] 4. Use robot_state_publisher to publish the robot description and TF tree.
 
-1. Create mini_car.urdf.xacro to describe the mini_car model
-1. Use robot_state_publisher to publish the robot description and TF tree.
 1. Create a Gazebo launch file to spawn the mini car in a simulation world.
 1. Add the Gazebo differential drive plugin to control the car using /cmd_vel.
 1. Configure RViz to display the robot state, TF frames, and odometry.
