@@ -77,4 +77,5 @@ set -u
 
 ros2 run mini_car simple_controller &
 ros2 launch mini_car_description display.launch.py &
+ros2 launch mini_car_gazebo gazebo.launch.py &
 wait

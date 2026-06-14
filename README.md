@@ -9,6 +9,7 @@ sudo apt install ros-humble-desktop
 
 sudo apt install \
   ros-humble-gazebo-ros-pkgs \
+  ros-humble-gazebo-plugins \
   ros-humble-robot-state-publisher \
   ros-humble-joint-state-publisher \
   ros-humble-joint-state-publisher-gui \
@@ -32,15 +33,16 @@ sudo apt install \
 ### Plan
 
 - [x] Initialize ROS2 package
-- [x] Implement simple_controller.cpp, publish /cmd_vel
-- [x] Create mini_car.urdf.xacro to describe the mini_car model
-- [x] Use robot_state_publisher to publish the robot description and TF tree.
-- [ ] Create a Gazebo launch file to spawn the mini car in a simulation world.
-- [ ] Add the Gazebo differential drive plugin to control the car using /cmd_vel.
-- [ ] Configure RViz to display the robot state, TF frames, and odometry.
-- [ ] Add a simulated LiDAR sensor to the mini car model.
-- [ ] Use SLAM Toolbox to build a map from simulated LiDAR data.
-- [ ] Add Navigation2 support for autonomous navigation.
+- [x] Implement `simple_controller.cpp` to publish `/cmd_vel`
+- [x] Create `mini_car.urdf.xacro` to describe the mini car model
+- [x] Use `robot_state_publisher` to publish the robot description and TF tree
+- [x] Create a Gazebo launch file to spawn the mini car in a simulation world
+- [ ] Add the Gazebo Ackermann steering plugin to control the car using `/cmd_vel`
+- [ ] Verify `/odom`, `/tf`, and `/joint_states` from the Gazebo simulation
+- [ ] Configure RViz to display the robot model, TF frames, odometry, and joint states
+- [ ] Add a simulated LiDAR sensor to the mini car model
+- [ ] Use SLAM Toolbox to build a map from simulated LiDAR data
+- [ ] Add Navigation2 support for autonomous navigation
 
 ### Initialization
 
@@ -196,3 +198,19 @@ sudo apt install \
     ```bash
     ros2 run tf2_tools view_frames
     ```
+
+### Support Gazebo
+
+1. Create mini_car_gazebo
+
+    ```bash
+    cd src/
+
+    ros2 pkg create mini_car_gazebo \
+      --build-type ament_cmake \
+      --dependencies rclcpp gazebo_ros xacro robot_state_publisher
+    ```
+
+1. Create Gazebo World `src/mini_car_gazebo/worlds/empty.world`
+1. Modify `src/mini_car_description/urdf/mini_car.urdf.xacro`
+1. Create Gazebo launch file `src/mini_car_gazebo/launch/gazebo.launch.py`

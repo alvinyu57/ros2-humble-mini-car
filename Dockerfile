@@ -7,6 +7,7 @@ ARG GID=1000
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         ros-humble-gazebo-ros-pkgs \
+        ros-humble-gazebo-plugins \
         ros-humble-robot-state-publisher \
         ros-humble-joint-state-publisher \
         ros-humble-joint-state-publisher-gui \
