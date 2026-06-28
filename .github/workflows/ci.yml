@@ -61,6 +61,5 @@ jobs:
           set -a
           source .env
           set +a
-          
-          docker tag ros-lyrical-builder:${DOCKER_IMAGE_VERSION} "${IMAGE_NAME}:${DOCKER_IMAGE_VERSION}"
+
           docker push "${IMAGE_NAME}:${DOCKER_IMAGE_VERSION}"
