@@ -13,10 +13,12 @@ show_usage() {
     echo "  -h, --help          Show this help message."
 }
 
+source .env
+
 run_tests=false
 run_in_docker=false
 ros_distro="${ROS_DISTRO:-lyrical}"
-source .env
+docker_image_version="${DOCKER_IMAGE_VERSION:-latest}"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -64,7 +66,7 @@ if [ "$run_in_docker" = true ]; then
     docker run --rm "${docker_tty_args[@]}" \
         -v "$(pwd):/workspace" \
         -w /workspace \
-        ros-${ros_distro}-builder:${DOCKER_IMAGE_VERSION} \
+        ros-${ros_distro}-builder:${docker_image_version} \
         bash -c "$inner_command"
 
     exit 0

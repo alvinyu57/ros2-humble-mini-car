@@ -14,10 +14,12 @@ show_usage() {
     echo "  -h, --help          Show this help message."
 }
 
+source .env
+
 run_in_docker=false
 gazebo_gui=true
 ros_distro="${ROS_DISTRO:-lyrical}"
-source .env
+docker_image_version="${DOCKER_IMAGE_VERSION:-latest}"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -98,7 +100,7 @@ if [ "$run_in_docker" = true ]; then
         "${docker_device_args[@]}" \
         -v "$WORKSPACE_DIR:/workspace" \
         -w /workspace \
-        ros-${ros_distro}-builder:${DOCKER_IMAGE_VERSION} \
+        ros-${ros_distro}-builder:${docker_image_version} \
         bash -c "$inner_command"
 
     exit 0
