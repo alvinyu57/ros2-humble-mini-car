@@ -62,5 +62,5 @@ jobs:
 
           image_name="ghcr.io/${GITHUB_REPOSITORY,,}/ros-lyrical-builder"
           
-          docker tag ros-lyrical-builder "${image_name}:${DOCKER_IMAGE_VERSION}"
+          docker tag ros-lyrical-builder:${DOCKER_IMAGE_VERSION} "${image_name}:${DOCKER_IMAGE_VERSION}"
           docker push "${image_name}:${DOCKER_IMAGE_VERSION}"
