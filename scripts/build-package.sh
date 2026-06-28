@@ -15,6 +15,7 @@ show_usage() {
 
 run_tests=false
 run_in_docker=false
+ros_distro="${ROS_DISTRO:-lyrical}"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -68,8 +69,18 @@ if [ "$run_in_docker" = true ]; then
     exit 0
 fi
 
+if [ ! -f "/opt/ros/${ros_distro}/setup.bash" ]; then
+    echo "ROS distro '${ros_distro}' is not installed at /opt/ros/${ros_distro}."
+    echo "Set ROS_DISTRO to an installed distro or build the Docker image first."
+    exit 1
+fi
+
+set +u
+source "/opt/ros/${ros_distro}/setup.bash"
+set -u
+
 rosdep update
-rosdep install --from-paths src --ignore-src -r -y
+rosdep install --from-paths src --ignore-src -r -y --rosdistro "${ros_distro}"
 
 colcon build
 

@@ -13,7 +13,7 @@ from launch_ros.actions import Node
 def generate_launch_description():
     mini_car_description_dir = get_package_share_directory('mini_car_description')
     mini_car_gazebo_dir = get_package_share_directory('mini_car_gazebo')
-    gazebo_ros_dir = get_package_share_directory('gazebo_ros')
+    ros_gz_sim_dir = get_package_share_directory('ros_gz_sim')
 
     xacro_file = os.path.join(
         mini_car_description_dir,
@@ -27,11 +27,13 @@ def generate_launch_description():
         'empty.world'
     )
 
+    robot_description_content = Command([
+        'xacro ',
+        xacro_file
+    ])
+
     robot_description = {
-        'robot_description': Command([
-            'xacro ',
-            xacro_file
-        ])
+        'robot_description': robot_description_content
     }
 
     robot_state_publisher = Node(
@@ -47,24 +49,24 @@ def generate_launch_description():
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(gazebo_ros_dir, 'launch', 'gazebo.launch.py')
+            os.path.join(ros_gz_sim_dir, 'launch', 'gz_sim.launch.py')
         ),
         launch_arguments={
-            'world': world_file,
-            'verbose': 'true'
+            'gz_args': f'-r -v 4 {world_file}'
         }.items()
     )
 
     spawn_entity = Node(
-        package='gazebo_ros',
-        executable='spawn_entity.py',
-        arguments=[
-            '-topic', 'robot_description',
-            '-entity', 'mini_car',
-            '-x', '0.0',
-            '-y', '0.0',
-            '-z', '0.075'
-        ],
+        package='ros_gz_sim',
+        executable='create',
+        parameters=[{
+            'world': 'empty_world',
+            'string': robot_description_content,
+            'name': 'mini_car',
+            'x': 0.0,
+            'y': 0.0,
+            'z': 0.075
+        }],
         output='screen'
     )
 

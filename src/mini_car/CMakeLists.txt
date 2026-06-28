@@ -9,10 +9,6 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(sensor_msgs REQUIRED)
-find_package(nav_msgs REQUIRED)
-find_package(tf2 REQUIRED)
-find_package(tf2_ros REQUIRED)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -26,15 +22,16 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-ament_package()
-
 add_executable(simple_controller src/simple_controller.cpp)
-ament_target_dependencies(simple_controller
-  rclcpp
-  geometry_msgs
+target_link_libraries(simple_controller
+  PRIVATE
+    rclcpp::rclcpp
+    geometry_msgs::geometry_msgs
 )
 
 install(TARGETS
   simple_controller
   DESTINATION lib/${PROJECT_NAME}
 )
+
+ament_package()

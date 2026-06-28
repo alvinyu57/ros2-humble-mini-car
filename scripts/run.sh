@@ -13,6 +13,7 @@ show_usage() {
 }
 
 run_in_docker=false
+ros_distro="${ROS_DISTRO:-lyrical}"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -67,15 +68,53 @@ fi
 
 if [ ! -f "$WORKSPACE_DIR/install/setup.bash" ]; then
     echo "ROS2 workspace is not built. Missing: $WORKSPACE_DIR/install/setup.bash"
-    echo "Run ./scripts/build.sh first."
+    echo "Run ./scripts/build-package.sh first."
     exit 1
 fi
 
+if [ ! -f "/opt/ros/${ros_distro}/setup.bash" ]; then
+    echo "ROS distro '${ros_distro}' is not installed at /opt/ros/${ros_distro}."
+    echo "Set ROS_DISTRO to an installed distro or build the Docker image first."
+    exit 1
+fi
+
+if [ -n "${SNAP:-}" ]; then
+    real_home="${SNAP_REAL_HOME:-$HOME}"
+
+    export HOME="$real_home"
+    export XDG_DATA_HOME="$HOME/.local/share"
+
+    if [ -n "${XDG_DATA_DIRS_VSCODE_SNAP_ORIG:-}" ]; then
+        export XDG_DATA_DIRS="$XDG_DATA_DIRS_VSCODE_SNAP_ORIG"
+    fi
+
+    if [ -n "${XDG_CONFIG_DIRS_VSCODE_SNAP_ORIG:-}" ]; then
+        export XDG_CONFIG_DIRS="$XDG_CONFIG_DIRS_VSCODE_SNAP_ORIG"
+    fi
+
+    for snap_var in ${!SNAP@}; do
+        unset "$snap_var"
+    done
+
+    unset GIO_LAUNCHED_DESKTOP_FILE
+    unset GIO_LAUNCHED_DESKTOP_FILE_PID
+    unset GIO_MODULE_DIR
+    unset GTK_EXE_PREFIX
+    unset GTK_IM_MODULE_FILE
+    unset GTK_MODULES
+    unset GTK_PATH
+    unset LOCPATH
+    unset QT_PLUGIN_PATH
+    unset QML2_IMPORT_PATH
+    unset LD_PRELOAD
+fi
+
 set +u
+source "/opt/ros/${ros_distro}/setup.bash"
 source "$WORKSPACE_DIR/install/setup.bash"
 set -u
 
-ros2 run mini_car simple_controller &
-ros2 launch mini_car_description display.launch.py &
+# ros2 run mini_car simple_controller &
+# ros2 launch mini_car_description display.launch.py &
 ros2 launch mini_car_gazebo gazebo.launch.py &
 wait

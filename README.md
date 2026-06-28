@@ -1,30 +1,25 @@
-# ros2-humble-mini-car
-A ROS 2 Humble C++ learning project for simulating and controlling a differential-drive mini car in Gazebo with RViz visualization.
+# ros2-lyrical-mini-car
+A ROS 2 Lyrical C++ learning project for simulating and controlling a differential-drive mini car in Gazebo with RViz visualization.
 
 ## Environment Setup
 
 ```bash
 sudo apt update
-sudo apt install ros-humble-desktop
+sudo apt install ros-lyrical-desktop
 
 sudo apt install \
-  ros-humble-gazebo-ros-pkgs \
-  ros-humble-gazebo-plugins \
-  ros-humble-robot-state-publisher \
-  ros-humble-joint-state-publisher \
-  ros-humble-joint-state-publisher-gui \
-  ros-humble-xacro \
-  ros-humble-rviz2 \
-  ros-humble-ros2-control \
-  ros-humble-ros2-controllers \
-  ros-humble-diff-drive-controller \
-  ros-humble-joint-state-broadcaster \
-  ros-humble-slam-toolbox \
-  ros-humble-navigation2 \
-  ros-humble-nav2-bringup \
-  ros-humble-geometry-msgs \
-  ros-humble-tf2-tools
-  liburdfdom-tools
+  ros-lyrical-ros-gz-sim \
+  ros-lyrical-ament-index-python \
+  ros-lyrical-launch \
+  ros-lyrical-launch-ros \
+  ros-lyrical-robot-state-publisher \
+  ros-lyrical-joint-state-publisher-gui \
+  ros-lyrical-xacro \
+  ros-lyrical-rviz2 \
+  ros-lyrical-geometry-msgs \
+  ros-lyrical-tf2-tools \
+  liburdfdom-tools \
+  python3-rosdep
 
 ```
 
@@ -53,7 +48,7 @@ sudo apt install \
 
     ros2 pkg create mini_car \
     --build-type ament_cmake \
-    --dependencies rclcpp geometry_msgs sensor_msgs nav_msgs tf2 tf2_ros
+    --dependencies rclcpp geometry_msgs
     ```
 
 1. C++ MVP
@@ -83,7 +78,11 @@ sudo apt install \
     src/mini_car/CMakeLists.txt
     ```cmake
     add_executable(simple_controller src/simple_controller.cpp)
-    ament_target_dependencies(simple_controller rclcpp)
+    target_link_libraries(simple_controller
+      PRIVATE
+        rclcpp::rclcpp
+        geometry_msgs::geometry_msgs
+    )
 
     install(TARGETS
     simple_controller
@@ -163,7 +162,7 @@ sudo apt install \
 
     ros2 pkg create mini_car_description \
       --build-type ament_cmake \
-      --dependencies xacro robot_state_publisher joint_state_publisher joint_state_publisher_gui rviz2
+      --dependencies ament_index_python launch launch_ros xacro robot_state_publisher joint_state_publisher_gui rviz2
     ```
 1. Create mini_car.urdf.xacro to describe the mini_car model
 1. Create launch file to publish robot description and TF tree
@@ -208,7 +207,7 @@ sudo apt install \
 
     ros2 pkg create mini_car_gazebo \
       --build-type ament_cmake \
-      --dependencies rclcpp gazebo_ros xacro robot_state_publisher
+      --dependencies ament_index_python launch launch_ros ros_gz_sim xacro robot_state_publisher mini_car_description
     ```
 
 1. Create Gazebo World `src/mini_car_gazebo/worlds/empty.world`
