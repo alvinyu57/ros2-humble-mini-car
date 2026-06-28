@@ -1,26 +1,24 @@
-FROM osrf/ros:humble-desktop-full
+ARG ROS_DISTRO=lyrical
+FROM osrf/ros:${ROS_DISTRO}-desktop-full
 
+ARG ROS_DISTRO
 ARG USER=user
 ARG UID=1000
 ARG GID=1000
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        ros-humble-gazebo-ros-pkgs \
-        ros-humble-robot-state-publisher \
-        ros-humble-joint-state-publisher \
-        ros-humble-joint-state-publisher-gui \
-        ros-humble-xacro \
-        ros-humble-rviz2 \
-        ros-humble-ros2-control \
-        ros-humble-ros2-controllers \
-        ros-humble-diff-drive-controller \
-        ros-humble-joint-state-broadcaster \
-        ros-humble-slam-toolbox \
-        ros-humble-navigation2 \
-        ros-humble-nav2-bringup \
-        ros-humble-geometry-msgs \
-        ros-humble-tf2-tools \
+        ros-${ROS_DISTRO}-ros-gz-sim \
+        ros-${ROS_DISTRO}-ament-index-python \
+        ros-${ROS_DISTRO}-launch \
+        ros-${ROS_DISTRO}-launch-ros \
+        ros-${ROS_DISTRO}-robot-state-publisher \
+        ros-${ROS_DISTRO}-joint-state-publisher-gui \
+        ros-${ROS_DISTRO}-xacro \
+        ros-${ROS_DISTRO}-rviz2 \
+        ros-${ROS_DISTRO}-geometry-msgs \
+        ros-${ROS_DISTRO}-tf2-tools \
+        libxcb-cursor0 \
         liburdfdom-tools \
         python3-rosdep
 

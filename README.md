@@ -1,46 +1,78 @@
-# ros2-humble-mini-car
-A ROS 2 Humble C++ learning project for simulating and controlling a differential-drive mini car in Gazebo with RViz visualization.
+# ros2-lyrical-mini-car
+A ROS 2 Lyrical C++ learning project for simulating and controlling a differential-drive mini car in Gazebo with RViz visualization.
 
 ## Environment Setup
 
 ```bash
 sudo apt update
-sudo apt install ros-humble-desktop
+sudo apt install ros-lyrical-desktop
 
 sudo apt install \
-  ros-humble-gazebo-ros-pkgs \
-  ros-humble-robot-state-publisher \
-  ros-humble-joint-state-publisher \
-  ros-humble-joint-state-publisher-gui \
-  ros-humble-xacro \
-  ros-humble-rviz2 \
-  ros-humble-ros2-control \
-  ros-humble-ros2-controllers \
-  ros-humble-diff-drive-controller \
-  ros-humble-joint-state-broadcaster \
-  ros-humble-slam-toolbox \
-  ros-humble-navigation2 \
-  ros-humble-nav2-bringup \
-  ros-humble-geometry-msgs \
-  ros-humble-tf2-tools
-  liburdfdom-tools
+  ros-lyrical-ros-gz-sim \
+  ros-lyrical-ament-index-python \
+  ros-lyrical-launch \
+  ros-lyrical-launch-ros \
+  ros-lyrical-robot-state-publisher \
+  ros-lyrical-joint-state-publisher-gui \
+  ros-lyrical-xacro \
+  ros-lyrical-rviz2 \
+  ros-lyrical-geometry-msgs \
+  ros-lyrical-tf2-tools \
+  liburdfdom-tools \
+  python3-rosdep
 
 ```
+
+## Scripts
+
+1. Build docker image
+    ```bash
+    ./scripts/build-docker-image.sh
+    ```
+1. Pull docker image from GHCR
+    ```bash
+    ./scripts/pull-docker-image.sh
+    ```
+1. Build ROS2 package
+    ```bash
+    ./scripts/build-package.sh [--docker] [--test]
+    #    --test, test        Run package tests after building.
+    #    --docker, docker    Build package in Docker."
+    ```
+1. Run ROS2 package
+    ```bash
+    ./scripts/run.sh [--docker] [--headless|--gui]
+    #    --docker, docker    Run package in Docker."
+    #    --headless          Run Gazebo without the GUI."
+    #    --gui               Run Gazebo with the GUI (default)."
+    ```
+
+1. Enter docker container
+    ```bash
+    ./scripts/pull-docker-image.sh
+    ```
+
+1. Clean up
+    ```bash
+    ./scripts/cleanup.sh
+    ```
+
 
 ## Learning Note
 
 ### Plan
 
 - [x] Initialize ROS2 package
-- [x] Implement simple_controller.cpp, publish /cmd_vel
-- [x] Create mini_car.urdf.xacro to describe the mini_car model
-- [x] Use robot_state_publisher to publish the robot description and TF tree.
-- [ ] Create a Gazebo launch file to spawn the mini car in a simulation world.
-- [ ] Add the Gazebo differential drive plugin to control the car using /cmd_vel.
-- [ ] Configure RViz to display the robot state, TF frames, and odometry.
-- [ ] Add a simulated LiDAR sensor to the mini car model.
-- [ ] Use SLAM Toolbox to build a map from simulated LiDAR data.
-- [ ] Add Navigation2 support for autonomous navigation.
+- [x] Implement `simple_controller.cpp` to publish `/cmd_vel`
+- [x] Create `mini_car.urdf.xacro` to describe the mini car model
+- [x] Use `robot_state_publisher` to publish the robot description and TF tree
+- [x] Create a Gazebo launch file to spawn the mini car in a simulation world
+- [ ] Add the Gazebo Ackermann steering plugin to control the car using `/cmd_vel`
+- [ ] Verify `/odom`, `/tf`, and `/joint_states` from the Gazebo simulation
+- [ ] Configure RViz to display the robot model, TF frames, odometry, and joint states
+- [ ] Add a simulated LiDAR sensor to the mini car model
+- [ ] Use SLAM Toolbox to build a map from simulated LiDAR data
+- [ ] Add Navigation2 support for autonomous navigation
 
 ### Initialization
 
@@ -51,7 +83,7 @@ sudo apt install \
 
     ros2 pkg create mini_car \
     --build-type ament_cmake \
-    --dependencies rclcpp geometry_msgs sensor_msgs nav_msgs tf2 tf2_ros
+    --dependencies rclcpp geometry_msgs
     ```
 
 1. C++ MVP
@@ -81,7 +113,11 @@ sudo apt install \
     src/mini_car/CMakeLists.txt
     ```cmake
     add_executable(simple_controller src/simple_controller.cpp)
-    ament_target_dependencies(simple_controller rclcpp)
+    target_link_libraries(simple_controller
+      PRIVATE
+        rclcpp::rclcpp
+        geometry_msgs::geometry_msgs
+    )
 
     install(TARGETS
     simple_controller
@@ -161,7 +197,7 @@ sudo apt install \
 
     ros2 pkg create mini_car_description \
       --build-type ament_cmake \
-      --dependencies xacro robot_state_publisher joint_state_publisher joint_state_publisher_gui rviz2
+      --dependencies ament_index_python launch launch_ros xacro robot_state_publisher joint_state_publisher_gui rviz2
     ```
 1. Create mini_car.urdf.xacro to describe the mini_car model
 1. Create launch file to publish robot description and TF tree
@@ -196,3 +232,19 @@ sudo apt install \
     ```bash
     ros2 run tf2_tools view_frames
     ```
+
+### Support Gazebo
+
+1. Create mini_car_gazebo
+
+    ```bash
+    cd src/
+
+    ros2 pkg create mini_car_gazebo \
+      --build-type ament_cmake \
+      --dependencies ament_index_python launch launch_ros ros_gz_sim xacro robot_state_publisher mini_car_description
+    ```
+
+1. Create Gazebo World `src/mini_car_gazebo/worlds/empty.world`
+1. Modify `src/mini_car_description/urdf/mini_car.urdf.xacro`
+1. Create Gazebo launch file `src/mini_car_gazebo/launch/gazebo.launch.py`
