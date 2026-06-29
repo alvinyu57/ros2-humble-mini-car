@@ -8,18 +8,20 @@ sudo apt update
 sudo apt install ros-lyrical-desktop
 
 sudo apt install \
-  ros-lyrical-ros-gz-sim \
-  ros-lyrical-ament-index-python \
-  ros-lyrical-launch \
-  ros-lyrical-launch-ros \
-  ros-lyrical-robot-state-publisher \
-  ros-lyrical-joint-state-publisher-gui \
-  ros-lyrical-xacro \
-  ros-lyrical-rviz2 \
-  ros-lyrical-geometry-msgs \
-  ros-lyrical-tf2-tools \
-  liburdfdom-tools \
-  python3-rosdep
+    ros-lyrical-gz-ros2-control \
+    ros-lyrical-ros-gz-sim \
+    ros-lyrical-ros-gz-bridge \
+    ros-lyrical-ros2-control \
+    ros-lyrical-ros2-controllers \
+    ros-lyrical-controller-manager \
+    ros-lyrical-robot-state-publisher \
+    ros-lyrical-joint-state-publisher-gui \
+    ros-lyrical-xacro \
+    ros-lyrical-geometry-msgs \
+    ros-lyrical-nav-msgs \
+    ros-lyrical-std-msgs \
+    ros-lyrical-tf2-ros \
+    python3-rosdep
 
 ```
 
@@ -66,14 +68,13 @@ sudo apt install \
 - [x] Implement `simple_controller.cpp` to publish `/cmd_vel`
 - [x] Create `mini_car.urdf.xacro` to describe the mini car model
 - [x] Use `robot_state_publisher` to publish the robot description and TF tree
-- [x] Create a Gazebo launch file to spawn the mini car in a simulation world
-- [ ] Add the Gazebo Ackermann steering plugin to control the car using `/cmd_vel`
-- [ ] Verify `/odom`, `/tf`, and `/joint_states` from the Gazebo simulation
+- [x] Create a GZ Sim launch file to spawn the mini car in a simulation world
+- [ ] Add Gazebo Ackermann control loop using `ros_gz`, `ros2_control`, and a custom controller node
+- [ ] Verify `/odom`, `/tf`, and `/joint_states` from simulation
 - [ ] Configure RViz to display the robot model, TF frames, odometry, and joint states
 - [ ] Add a simulated LiDAR sensor to the mini car model
 - [ ] Use SLAM Toolbox to build a map from simulated LiDAR data
 - [ ] Add Navigation2 support for autonomous navigation
-
 ### Initialization
 
 1. Create ROS2 C++ Package
