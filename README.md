@@ -75,6 +75,7 @@ sudo apt install \
 - [ ] Add a simulated LiDAR sensor to the mini car model
 - [ ] Use SLAM Toolbox to build a map from simulated LiDAR data
 - [ ] Add Navigation2 support for autonomous navigation
+
 ### Initialization
 
 1. Create ROS2 C++ Package
