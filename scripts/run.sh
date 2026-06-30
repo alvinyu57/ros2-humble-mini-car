@@ -119,6 +119,9 @@ if [ ! -f "/opt/ros/${ros_distro}/setup.bash" ]; then
     exit 1
 fi
 
+export ROS_LOG_DIR="$WORKSPACE_DIR/log"
+mkdir -p "$ROS_LOG_DIR"
+
 if [ -n "${SNAP:-}" ]; then
     real_home="${SNAP_REAL_HOME:-$HOME}"
 
@@ -150,6 +153,9 @@ if [ -n "${SNAP:-}" ]; then
     unset LD_PRELOAD
 fi
 
+export HOME="$WORKSPACE_DIR/.home"
+mkdir -p "$HOME"
+
 set +u
 source "/opt/ros/${ros_distro}/setup.bash"
 source "$WORKSPACE_DIR/install/setup.bash"
@@ -157,5 +163,6 @@ set -u
 
 # ros2 run mini_car simple_controller &
 # ros2 launch mini_car_description display.launch.py &
-ros2 launch mini_car_gazebo gazebo.launch.py gui:="${gazebo_gui}" &
+# ros2 launch mini_car_gazebo gazebo.launch.py gui:="${gazebo_gui}" &
+ros2 launch mini_car_gazebo gazebo_ackermann.launch.py gui:="${gazebo_gui}" &
 wait

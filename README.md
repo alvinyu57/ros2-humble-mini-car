@@ -8,18 +8,20 @@ sudo apt update
 sudo apt install ros-lyrical-desktop
 
 sudo apt install \
-  ros-lyrical-ros-gz-sim \
-  ros-lyrical-ament-index-python \
-  ros-lyrical-launch \
-  ros-lyrical-launch-ros \
-  ros-lyrical-robot-state-publisher \
-  ros-lyrical-joint-state-publisher-gui \
-  ros-lyrical-xacro \
-  ros-lyrical-rviz2 \
-  ros-lyrical-geometry-msgs \
-  ros-lyrical-tf2-tools \
-  liburdfdom-tools \
-  python3-rosdep
+    ros-lyrical-gz-ros2-control \
+    ros-lyrical-ros-gz-sim \
+    ros-lyrical-ros-gz-bridge \
+    ros-lyrical-ros2-control \
+    ros-lyrical-ros2-controllers \
+    ros-lyrical-controller-manager \
+    ros-lyrical-robot-state-publisher \
+    ros-lyrical-joint-state-publisher-gui \
+    ros-lyrical-xacro \
+    ros-lyrical-geometry-msgs \
+    ros-lyrical-nav-msgs \
+    ros-lyrical-std-msgs \
+    ros-lyrical-tf2-ros \
+    python3-rosdep
 
 ```
 
@@ -66,9 +68,9 @@ sudo apt install \
 - [x] Implement `simple_controller.cpp` to publish `/cmd_vel`
 - [x] Create `mini_car.urdf.xacro` to describe the mini car model
 - [x] Use `robot_state_publisher` to publish the robot description and TF tree
-- [x] Create a Gazebo launch file to spawn the mini car in a simulation world
-- [ ] Add the Gazebo Ackermann steering plugin to control the car using `/cmd_vel`
-- [ ] Verify `/odom`, `/tf`, and `/joint_states` from the Gazebo simulation
+- [x] Create a GZ Sim launch file to spawn the mini car in a simulation world
+- [x] Add Gazebo Ackermann control loop using `ros_gz`, `ros2_control`, and a custom controller node
+- [x] Verify `/odom`, `/tf`, and `/joint_states` from simulation
 - [ ] Configure RViz to display the robot model, TF frames, odometry, and joint states
 - [ ] Add a simulated LiDAR sensor to the mini car model
 - [ ] Use SLAM Toolbox to build a map from simulated LiDAR data
@@ -248,3 +250,16 @@ sudo apt install \
 1. Create Gazebo World `src/mini_car_gazebo/worlds/empty.world`
 1. Modify `src/mini_car_description/urdf/mini_car.urdf.xacro`
 1. Create Gazebo launch file `src/mini_car_gazebo/launch/gazebo.launch.py`
+1. Create `src/mini_car_gazebo/config/ros2_control.yaml`
+1. Build and run mini_car_gazebo
+    ```bash
+    ros2 launch mini_car_gazebo gazebo_ackermann.launch.py gui:="${gazebo_gui}"
+    ```
+1. Manipulate the mini_car
+    ```bash
+    # Going to left
+    ros2 topic pub /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.5}, angular: {z: 0.3}}" -r 10
+
+    # Going to right
+    ros2 topic pub /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.5}, angular: {z: -0.3}}" -r 10
+    ```
