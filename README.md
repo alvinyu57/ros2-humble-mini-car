@@ -250,3 +250,16 @@ sudo apt install \
 1. Create Gazebo World `src/mini_car_gazebo/worlds/empty.world`
 1. Modify `src/mini_car_description/urdf/mini_car.urdf.xacro`
 1. Create Gazebo launch file `src/mini_car_gazebo/launch/gazebo.launch.py`
+1. Create `src/mini_car_gazebo/config/ros2_control.yaml`
+1. Build and run mini_car_gazebo
+    ```bash
+    ros2 launch mini_car_gazebo gazebo_ackermann.launch.py gui:="${gazebo_gui}"
+    ```
+1. Manipulate the mini_car
+    ```bash
+    # Going to left
+    ros2 topic pub /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.5}, angular: {z: 0.3}}" -r 10
+
+    # Going to right
+    ros2 topic pub /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.5}, angular: {z: -0.3}}" -r 10
+    ```
