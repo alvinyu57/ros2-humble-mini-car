@@ -44,6 +44,12 @@ def generate_launch_description():
         'gazebo_ackermann.rviz',
     )
 
+    scan_bridge_config = os.path.join(
+        mini_car_gazebo_dir,
+        'config',
+        'scan_bridge.yaml',
+    )
+
     robot_description = {
         'robot_description': ParameterValue(
             Command([
@@ -106,6 +112,16 @@ def generate_launch_description():
         arguments=[
             '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
         ],
+    )
+
+    scan_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        name='scan_bridge',
+        output='screen',
+        parameters=[{
+            'config_file': scan_bridge_config,
+        }],
     )
 
     rviz_node = Node(
@@ -215,6 +231,7 @@ def generate_launch_description():
         gazebo_gui,
         gazebo_headless,
         clock_bridge,
+        scan_bridge,
         delayed_spawn,
         delayed_controllers,
         delayed_ackermann_controller,
