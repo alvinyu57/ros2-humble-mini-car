@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <memory>
 #include <string>
@@ -18,6 +19,7 @@ public:
     wheel_base_ = declare_parameter<double>("wheel_base", 0.40);
     wheel_radius_ = declare_parameter<double>("wheel_radius", 0.07);
     max_steering_angle_ = declare_parameter<double>("max_steering_angle", 0.6);
+    max_steering_rate_ = declare_parameter<double>("max_steering_rate", 1.0);
     max_speed_ = declare_parameter<double>("max_speed", 2.0);
     command_timeout_sec_ = declare_parameter<double>("command_timeout_sec", 0.5);
     publish_odom_ = declare_parameter<bool>("publish_odom", true);
@@ -48,7 +50,7 @@ public:
 
     timer_ =
       create_wall_timer(
-        std::chrono::milliseconds(20),
+        std::chrono::milliseconds(10),
         std::bind(&AckermannController::update, this));
 
     RCLCPP_INFO(get_logger(), "Mini car Ackermann controller started");
@@ -81,7 +83,8 @@ private:
       yaw_rate = 0.0;
     }
 
-    const double steering_angle = computeSteeringAngle(speed, yaw_rate);
+    const double desired_steering_angle = computeSteeringAngle(speed, yaw_rate);
+    const double steering_angle = limitSteeringRate(desired_steering_angle, dt);
     const double rear_wheel_velocity = speed / wheel_radius_;
 
     publishJointCommands(steering_angle, rear_wheel_velocity);
@@ -99,6 +102,24 @@ private:
 
     const double steering_angle = std::atan(wheel_base_ * yaw_rate / speed);
     return std::clamp(steering_angle, -max_steering_angle_, max_steering_angle_);
+  }
+
+  double limitSteeringRate(double desired_steering_angle, double dt)
+  {
+    const double max_delta = std::max(0.0, max_steering_rate_ * dt);
+    const double delta =
+      std::clamp(
+        desired_steering_angle - current_steering_angle_,
+        -max_delta,
+        max_delta);
+
+    current_steering_angle_ =
+      std::clamp(
+        current_steering_angle_ + delta,
+        -max_steering_angle_,
+        max_steering_angle_);
+
+    return current_steering_angle_;
   }
 
   void publishJointCommands(double steering_angle, double rear_wheel_velocity)
@@ -161,6 +182,7 @@ private:
   double wheel_base_{0.40};
   double wheel_radius_{0.07};
   double max_steering_angle_{0.6};
+  double max_steering_rate_{1.0};
   double max_speed_{2.0};
   double command_timeout_sec_{0.5};
 
@@ -171,6 +193,7 @@ private:
 
   double target_speed_{0.0};
   double target_yaw_rate_{0.0};
+  double current_steering_angle_{0.0};
 
   double x_{0.0};
   double y_{0.0};

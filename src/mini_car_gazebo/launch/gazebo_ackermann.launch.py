@@ -14,6 +14,7 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 def generate_launch_description():
     gui = LaunchConfiguration('gui')
+    rviz = LaunchConfiguration('rviz')
 
     mini_car_description_dir = get_package_share_directory('mini_car_description')
     mini_car_gazebo_dir = get_package_share_directory('mini_car_gazebo')
@@ -35,6 +36,12 @@ def generate_launch_description():
         mini_car_gazebo_dir,
         'config',
         'ros2_control.yaml',
+    )
+
+    rviz_config_file = os.path.join(
+        mini_car_description_dir,
+        'rviz',
+        'gazebo_ackermann.rviz',
     )
 
     robot_description = {
@@ -63,7 +70,7 @@ def generate_launch_description():
             os.path.join(ros_gz_sim_dir, 'launch', 'gz_sim.launch.py')
         ),
         launch_arguments={
-            'gz_args': f'-r -v 4 {world_file}',
+            'gz_args': f'-r -v 2 {world_file}',
         }.items(),
         condition=IfCondition(gui),
     )
@@ -73,7 +80,7 @@ def generate_launch_description():
             os.path.join(ros_gz_sim_dir, 'launch', 'gz_sim.launch.py')
         ),
         launch_arguments={
-            'gz_args': f'-s -r -v 4 {world_file}',
+            'gz_args': f'-s -r -v 2 {world_file}',
         }.items(),
         condition=UnlessCondition(gui),
     )
@@ -99,6 +106,16 @@ def generate_launch_description():
         arguments=[
             '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
         ],
+    )
+
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        output='screen',
+        arguments=['-d', rviz_config_file],
+        parameters=[{'use_sim_time': True}],
+        condition=IfCondition(rviz),
     )
 
     joint_state_broadcaster_spawner = Node(
@@ -150,6 +167,7 @@ def generate_launch_description():
             'wheel_base': 0.40,
             'wheel_radius': 0.07,
             'max_steering_angle': 0.6,
+            'max_steering_rate': 1.0,
             'max_speed': 2.0,
             'command_timeout_sec': 0.5,
             'publish_odom': True,
@@ -177,11 +195,21 @@ def generate_launch_description():
         actions=[ackermann_controller],
     )
 
+    delayed_rviz = TimerAction(
+        period=8.0,
+        actions=[rviz_node],
+    )
+
     return LaunchDescription([
         DeclareLaunchArgument(
             'gui',
             default_value='true',
             description='Start the Gazebo GUI',
+        ),
+        DeclareLaunchArgument(
+            'rviz',
+            default_value='true',
+            description='Start RViz with the Ackermann simulation view',
         ),
         robot_state_publisher,
         gazebo_gui,
@@ -190,4 +218,5 @@ def generate_launch_description():
         delayed_spawn,
         delayed_controllers,
         delayed_ackermann_controller,
+        delayed_rviz,
     ])
