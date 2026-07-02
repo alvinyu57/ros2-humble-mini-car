@@ -70,7 +70,7 @@ def generate_launch_description():
             os.path.join(ros_gz_sim_dir, 'launch', 'gz_sim.launch.py')
         ),
         launch_arguments={
-            'gz_args': f'-r -v 4 {world_file}',
+            'gz_args': f'-r -v 2 {world_file}',
         }.items(),
         condition=IfCondition(gui),
     )
@@ -80,7 +80,7 @@ def generate_launch_description():
             os.path.join(ros_gz_sim_dir, 'launch', 'gz_sim.launch.py')
         ),
         launch_arguments={
-            'gz_args': f'-s -r -v 4 {world_file}',
+            'gz_args': f'-s -r -v 2 {world_file}',
         }.items(),
         condition=UnlessCondition(gui),
     )
@@ -167,6 +167,7 @@ def generate_launch_description():
             'wheel_base': 0.40,
             'wheel_radius': 0.07,
             'max_steering_angle': 0.6,
+            'max_steering_rate': 1.0,
             'max_speed': 2.0,
             'command_timeout_sec': 0.5,
             'publish_odom': True,

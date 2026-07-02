@@ -155,6 +155,8 @@ fi
 
 export HOME="$WORKSPACE_DIR/.home"
 mkdir -p "$HOME"
+mkdir -p "$HOME/.rviz2"
+touch "$HOME/.rviz2/persistent_settings"
 
 set +u
 source "/opt/ros/${ros_distro}/setup.bash"
